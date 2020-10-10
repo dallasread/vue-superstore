@@ -1,0 +1,36 @@
+{
+  "name": "vue-superstore",
+  "version": "0.1.0",
+  "description": "Intuitive database relationships for Vue.",
+  "main": "lib/superstore/index.js",
+  "author": "dallasread",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.11.4",
+    "@vue/cli": "^4.5.6",
+    "@vue/cli-plugin-unit-jest": "^4.5.6",
+    "@vue/cli-service": "^4.5.6",
+    "@vue/test-utils": "^1.1.0",
+    "eslint": "^7.9.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-vue": "^6.2.2",
+    "standard": "^14.3.4",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "dependencies": {
+    "localforage": "^1.9.0",
+    "uniq-id": "^1.0.0",
+    "vue": "^2.6.12"
+  },
+  "scripts": {
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "test:unit": "vue-cli-service test:unit",
+    "test:watch": "vue-cli-service test:unit --watch"
+  }
+}
