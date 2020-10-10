@@ -26,80 +26,14 @@
 
 ### What's so great about Superstore?
 
-Once you tell `Superstore` about your collections and how they relate, you can start using your records. For example, you can do things like this *with intuitive, out-of-the-box database interaction*:
+With a simple `Superstore` configuration, you can do things like this in your template *with intuitive, **out-of-the-box** database-connected interaction*:
 
-```vue
-<template>
-    <div id="project-management">
-        <select id="projects">
-            <option v-for="project in projects" v-html="project.name" />
-        </select>
-        <ul id="tasks">
-            <li v-for="task in project.tasks">
-                <input type="checkbox" :checked="task.complete" @change="task.save">
-                <input type="text" v-model="task.title" @blur="task.save">
-                <a @click="task.destroy">x</a>
-            </li>
-            <li>
-                <form @submit.prevent="newTask.save(); newTask = tasks.build({ project: project })">
-                    <input type="text" v-model="newTask.title">
-                </form>
-            </li>
-        </ul>
-        <p>
-            <span v-if="project.tasks.loading?">Loading...</span>
-            <span v-else>Loaded.</span>
-        </p>
-    </div>
-</template>
 ```
-
-And the setup for this particular Vue component couldn't be any more simple:
-
-```js
-import Superstore from 'vue-superstore'
-import CONFIG from './config'
-
-const models = new Superstore(CONFIG).models
-
-export default {
-  data () {
-    return {
-      tasks: models.tasks,
-      projects: models.projects,
-      newTask: models.tasks.build()
-    }
-  }
-}
-```
-
-What does the `CONFIG` look like?
-
-```js
-const CONFIG = new Superstore({
-      models: {
-          tasks: new Superstore.Models.Base({
-              name: 'task'
-          }, {
-              relationships: {
-                  project: {
-                      type: 'belongsTo'
-                  }
-              },
-              props: ['title', 'complete'] // Vue props!
-          }),
-          projects: new Superstore.Models.Base({
-              name: 'project'
-          }, {
-              relationships: {
-                  tasks: {
-                      type: 'hasMany'
-                  }
-              },
-              props: ['name']
-          })
-      }
-  });
+<li v-for="task in project.tasks">
+    <input type="checkbox" :checked="task.complete" @change="task.save">
+    <input type="text" v-model="task.title" @blur="task.save">
+    <a @click="task.destroy">x</a>
+</li>
 ```
 
 ### Instance
