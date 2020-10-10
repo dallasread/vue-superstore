@@ -8,10 +8,10 @@
 
 1. [What's so great about Superstore?](#whats-so-great-about-superstore)
 1. [Instance](#instance)
-   1. Props
-   1. Methods
-   1. Computed
-   1. Mixins
+   1. [Props](#props)
+   1. [Methods](#methods)
+   1. [Computed](#computed)
+   1. [Mixins](#mixins)
 1. [Models](#models)
    1. [BaseModel](#base-model)
    1. [StorageModel](#storage-model)
