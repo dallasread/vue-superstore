@@ -1,63 +1,120 @@
 <template>
     <div id="project-management">
-      HI
-        <select id="projects">
-            <option v-for="project in projects" v-html="project.name" />
-        </select>
-        <!-- <ul id="tasks">
-            <li v-for="task in project.tasks">
-                <input type="checkbox" :checked="task.complete" @change="task.save">
-                <input type="text" v-model="task.title" @blur="task.save">
-                <a @click="task.destroy">x</a>
-            </li>
-            <li>
-                <form @submit.prevent="newTask.save(); newTask = tasks.build({ project: project })">
-                    <input type="text" v-model="newTask.title">
-                </form>
-            </li>
-        </ul> -->
+      <ul id="projects">
+        <li v-for="project in projects" :key="project.id">
+          <a href="javascript:;" @click="selectedProject = project" :class="selectedProject === project ? 'active' : ''">
+            {{project.name}}
+          </a>
+        </li>
+        <li>
+          <form @submit.prevent="newProject.save(); newProject = projects.build()">
+            <input type="text" v-model="newProject.name" placeholder="+ Add Project">
+          </form>
+        </li>
+      </ul>
+      <p>({{completed}} / {{selectedProject.tasks.length}} complete)</p>
+      <ul v-if="selectedProject" id="tasks">
+          <li v-for="task in incomplete(selectedProject.tasks)" :key="task.id" class="incomplete">
+              <input type="checkbox" v-model="task.complete" @change="task.save">
+              <input type="text" v-model="task.title" @blur="task.save">
+              <a @click="task.destroy">x</a>
+          </li>
+          <li class="incomplete">
+              <form @submit.prevent="newTask.projectId = selectedProject.id; newTask.save(); newTask = tasks.build()">
+                <input type="checkbox" v-model="newTask.complete" disabled="disabled">
+                <input type="text" v-model="newTask.title" placeholder="+ Add Task">
+              </form>
+          </li>
+          <li v-if="complete(selectedProject.tasks).length" class="divider"><hr></li>
+          <li v-for="task in complete(selectedProject.tasks)" :key="task.id" class="complete">
+              <input type="checkbox" v-model="task.complete" @change="task.save">
+              <input type="text" v-model="task.title" @blur="task.save">
+              <a @click="task.destroy">x</a>
+          </li>
+      </ul>
     </div>
 </template>
 
 <script>
 import Superstore from '../../lib/superstore/index.js'
 
-const models = new Superstore({
+const superstore = new Superstore({
     models: {
         tasks: new Superstore.Models.Base({
-            name: 'task'
-        }, {
+            name: 'task',
             relationships: {
                 project: {
                     type: 'belongsTo'
                 }
             },
-            props: ['title', 'complete'] // Vue props!
+            props: {
+              title: {
+                type: String,
+                default: ''
+              },
+              complete: {
+                type: Boolean,
+                default: false
+              }
+            },
+            scopes: {
+              sorted() {
+                return this.sort((a, b) => {
+                  if ( a.complete && !b.complete) return 1;
+                  if (!a.complete && b.complete)  return -1;
+                  return 0;
+                })
+              }
+            }
         }),
         projects: new Superstore.Models.Base({
-            name: 'project'
-        }, {
+            name: 'project',
             relationships: {
                 tasks: {
                     type: 'hasMany'
                 }
             },
-            props: ['name']
+            props: {
+              name: {
+                default: ''
+              }
+            }
         })
     }
-}).models
+}).data
 
 export default {
   name: 'App',
   data () {
+    window.app = this;
+
+    const task = superstore.tasks.create({
+      title: 'Create an example',
+      complete: true,
+      projectId: superstore.projects.create({ name: 'Project #1' }).id
+    })
+
     return {
-      tasks: models.tasks,
-      projects: models.projects,
-      newTask: models.tasks.build()
+      tasks: superstore.tasks,
+      projects: superstore.projects,
+      selectedProject: task.project,
+      newTask: superstore.tasks.build(),
+      newProject: superstore.projects.build()
     }
   },
-  mounted() {
-    this.tasks.save({ title: 'Create an example' })
+  computed: {
+    completed() {
+      return this.selectedProject.tasks.filter((t) => t.complete).length
+    }
+  },
+  methods: {
+    incomplete(arr) {
+      return arr.filter((t) => !t.complete)
+    },
+
+    complete(arr) {
+      return arr.filter((t) => t.complete)
+    }
   }
 }
 </script>
@@ -89,6 +146,7 @@ input, textarea, select {
     font: inherit;
     vertical-align: baseline;
     color: inherit;
+    outline: none;
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
@@ -133,11 +191,7 @@ html {
 
 html, body {
   color: #2c3e50;
-
-  @media (prefers-color-scheme: dark) {
-    background: #111;
-    color: rgba(255, 255, 255, 0.7);
-  }
+  padding: 20px;
 }
 
 #app {
@@ -146,11 +200,68 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-input {
-  border: 1px solid #eee;
+#projects {
+  background: #eee;
+}
 
-  @media (prefers-color-scheme: dark) {
-    border-color: #444;
-  }
+#projects:after {
+  content: '';
+  clear: both;
+  display: block;
+}
+
+#projects li {
+  float: left;
+}
+
+#projects a, #projects input {
+  border-right: 1px solid #ddd;
+  display: block;
+  padding: 10px 20px;
+  line-height: 1;
+}
+
+#projects input {
+  padding: 7px 10px;
+  width: 8em;
+}
+
+#projects a.active {
+  background: #777;
+  color: #eee;
+}
+
+#tasks li.incomplete {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+#tasks li.divider {
+  margin-top: -9px;
+}
+
+#tasks li.complete {
+  font-size: 80%;
+  padding: 5px 0;
+  color: #777;
+}
+
+#tasks hr {
+  border: 0;
+  background: #ccc;
+  height: 1px;
+}
+
+#tasks input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+p {
+  font-weight: bold;
+  padding: 8px;
+  background: #777;
+  font-size: 80%;
+  color: #eee;
+  text-align: center;
 }
 </style>
