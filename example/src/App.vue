@@ -2,19 +2,19 @@
     <div id="project-management">
       <ul id="projects">
         <li v-for="project in projects" :key="project.id">
-          <a href="javascript:;" @click="selectedProject = project" :class="selectedProject === project ? 'active' : ''">
+          <a href="javascript:;" @click="selectProject(project)" :class="selectedProject === project ? 'active' : ''">
             {{project.name}}
           </a>
         </li>
         <li>
-          <form @submit.prevent="newProject.save(); newProject = projects.build()">
+          <form @submit.prevent="newProject.save(); selectedProject = newProject; newProject = projects.build()">
             <input type="text" v-model="newProject.name" placeholder="+ Add Project">
           </form>
         </li>
       </ul>
-      <p>({{completed.length}} / {{selectedProject.tasks.length}} complete)</p>
+      <p>({{selectedProject.tasks.filter((t) => t.complete).length}} / {{selectedProject.tasks.length}} complete)</p>
       <ul v-if="selectedProject" id="tasks">
-          <li v-for="task in incompleted" :key="task.id" class="incomplete">
+          <li v-for="task in selectedProject.tasks.filter((t) => !t.complete)" :key="task.id" class="incomplete">
               <input type="checkbox" v-model="task.complete" @change="task.save">
               <input type="text" v-model="task.title" @blur="task.save">
               <a href="javascript:;" @click="task.destroy">x</a>
@@ -25,8 +25,8 @@
                 <input type="text" v-model="newTask.title" placeholder="+ Add Task">
               </form>
           </li>
-          <li v-if="completed.length" class="divider"><hr></li>
-          <li v-for="task in completed" :key="task.id" class="complete">
+          <li v-if="selectedProject.tasks.filter((t) => t.complete).length" class="divider"><hr></li>
+          <li v-for="task in selectedProject.tasks.filter((t) => t.complete)" :key="task.id" class="complete">
               <input type="checkbox" v-model="task.complete" @change="task.save">
               <input type="text" v-model="task.title" @blur="task.save">
               <a href="javascript:;" @click="task.destroy">x</a>
@@ -78,6 +78,7 @@ export default {
   name: 'App',
   data () {
     window.app = this;
+    window.superstore = superstore
 
     const task = superstore.tasks.create({
       title: 'Create an example',
@@ -93,12 +94,14 @@ export default {
       newProject: superstore.projects.build()
     }
   },
-  computed: {
-    completed() {
-      return this.selectedProject.tasks.filter((t) => t.complete)
-    },
-    incompleted() {
-      return this.selectedProject.tasks.filter((t) => !t.complete)
+  methods: {
+    selectProject(project) {
+      if (this.selectedProject === project) {
+        project.name = prompt('What is this project called?')
+        project.save()
+      } else {
+        this.selectedProject = project
+      }
     }
   }
 }
