@@ -1,16 +1,26 @@
 {
   "name": "vue-superstore",
-  "version": "0.1.0",
-  "description": "Intuitive database relationships for Vue.",
-  "main": "lib/superstore/index.js",
-  "author": "dallasread",
-  "license": "MIT",
+  "version": "0.0.1",
   "private": false,
+  "description": "Intuitive database relationships for Vue.",
+  "author": "dallasread",
+  "scripts": {
+    "test:unit": "vue-cli-service test:unit",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "test:watch": "vue-cli-service test:unit --watch"
+  },
+  "main": "lib/superstore/index.js",
+  "dependencies": {
+    "localforage": "^1.9.0",
+    "uniq-id": "^1.0.0",
+    "vue": "^3.0.0"
+  },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.4",
     "@vue/cli": "^4.5.6",
-    "@vue/cli-plugin-unit-jest": "^4.5.6",
-    "@vue/cli-service": "^4.5.6",
+    "@vue/cli-plugin-unit-jest": "~4.5.7",
+    "@vue/cli-service": "~4.5.7",
     "@vue/test-utils": "^1.1.0",
     "eslint": "^7.9.0",
     "eslint-config-standard": "^14.1.1",
@@ -22,15 +32,5 @@
     "standard": "^14.3.4",
     "webpack-dev-server": "^3.11.0"
   },
-  "dependencies": {
-    "localforage": "^1.9.0",
-    "uniq-id": "^1.0.0",
-    "vue": "^2.6.12"
-  },
-  "scripts": {
-    "lint": "eslint . --ext .js",
-    "lint:fix": "eslint . --ext .js --fix",
-    "test:unit": "vue-cli-service test:unit",
-    "test:watch": "vue-cli-service test:unit --watch"
-  }
+  "license": "MIT"
 }

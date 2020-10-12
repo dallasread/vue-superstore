@@ -51,9 +51,6 @@ Records are just normal Vue objects, so you can attach `computed` properties, `m
 #### Belongs To
 #### Has Many
 
-project.tasks.saved
-project.tasks.loading?
-
 ### Stores
 
 You can supply an offline AND online storage and they work together!
@@ -89,3 +86,10 @@ const store = new Superstore.Stores.Rest({
 ### Development
 
 #### Logger
+
+## Tasks
+
+- Offline support
+- S3 support
+- Multi-store support
+- Scopes

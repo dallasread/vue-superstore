@@ -12,12 +12,12 @@
           </form>
         </li>
       </ul>
-      <p>({{completed}} / {{selectedProject.tasks.length}} complete)</p>
+      <p>({{completed.length}} / {{selectedProject.tasks.length}} complete)</p>
       <ul v-if="selectedProject" id="tasks">
-          <li v-for="task in incomplete(selectedProject.tasks)" :key="task.id" class="incomplete">
+          <li v-for="task in incompleted" :key="task.id" class="incomplete">
               <input type="checkbox" v-model="task.complete" @change="task.save">
               <input type="text" v-model="task.title" @blur="task.save">
-              <a @click="task.destroy">x</a>
+              <a href="javascript:;" @click="task.destroy">x</a>
           </li>
           <li class="incomplete">
               <form @submit.prevent="newTask.projectId = selectedProject.id; newTask.save(); newTask = tasks.build()">
@@ -25,11 +25,11 @@
                 <input type="text" v-model="newTask.title" placeholder="+ Add Task">
               </form>
           </li>
-          <li v-if="complete(selectedProject.tasks).length" class="divider"><hr></li>
-          <li v-for="task in complete(selectedProject.tasks)" :key="task.id" class="complete">
+          <li v-if="completed.length" class="divider"><hr></li>
+          <li v-for="task in completed" :key="task.id" class="complete">
               <input type="checkbox" v-model="task.complete" @change="task.save">
               <input type="text" v-model="task.title" @blur="task.save">
-              <a @click="task.destroy">x</a>
+              <a href="javascript:;" @click="task.destroy">x</a>
           </li>
       </ul>
     </div>
@@ -55,15 +55,6 @@ const superstore = new Superstore({
               complete: {
                 type: Boolean,
                 default: false
-              }
-            },
-            scopes: {
-              sorted() {
-                return this.sort((a, b) => {
-                  if ( a.complete && !b.complete) return 1;
-                  if (!a.complete && b.complete)  return -1;
-                  return 0;
-                })
               }
             }
         }),
@@ -104,16 +95,10 @@ export default {
   },
   computed: {
     completed() {
-      return this.selectedProject.tasks.filter((t) => t.complete).length
-    }
-  },
-  methods: {
-    incomplete(arr) {
-      return arr.filter((t) => !t.complete)
+      return this.selectedProject.tasks.filter((t) => t.complete)
     },
-
-    complete(arr) {
-      return arr.filter((t) => t.complete)
+    incompleted() {
+      return this.selectedProject.tasks.filter((t) => !t.complete)
     }
   }
 }
