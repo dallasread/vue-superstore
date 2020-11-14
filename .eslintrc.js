@@ -4,10 +4,15 @@ module.exports = {
     node: true
   },
   extends: [
+    'plugin:vue/vue3-recommended',
     'standard'
   ],
+  plugins: [
+    'vue'
+  ],
   parserOptions: {
-    parser: 'babel-eslint'
+    ecmaVersion: 11,
+    sourceType: 'module'
   },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',

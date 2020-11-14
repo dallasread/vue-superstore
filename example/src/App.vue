@@ -1,83 +1,140 @@
 <template>
-    <div id="project-management">
-      <ul id="projects">
-        <li v-for="project in projects" :key="project.id">
-          <a href="javascript:;" @click="selectProject(project)" :class="selectedProject === project ? 'active' : ''">
-            {{project.name}}
-          </a>
-        </li>
-        <li>
-          <form @submit.prevent="newProject.save(); selectedProject = newProject; newProject = projects.build()">
-            <input type="text" v-model="newProject.name" placeholder="+ Add Project">
-          </form>
-        </li>
-      </ul>
-      <p>({{selectedProject.tasks.filter((t) => t.complete).length}} / {{selectedProject.tasks.length}} complete)</p>
-      <ul v-if="selectedProject" id="tasks">
-          <li v-for="task in selectedProject.tasks.filter((t) => !t.complete)" :key="task.id" class="incomplete">
-              <input type="checkbox" v-model="task.complete" @change="task.save">
-              <input type="text" v-model="task.title" @blur="task.save">
-              <a href="javascript:;" @click="task.destroy">x</a>
-          </li>
-          <li class="incomplete">
-              <form @submit.prevent="newTask.projectId = selectedProject.id; newTask.save(); newTask = tasks.build()">
-                <input type="checkbox" v-model="newTask.complete" disabled="disabled">
-                <input type="text" v-model="newTask.title" placeholder="+ Add Task">
-              </form>
-          </li>
-          <li v-if="selectedProject.tasks.filter((t) => t.complete).length" class="divider"><hr></li>
-          <li v-for="task in selectedProject.tasks.filter((t) => t.complete)" :key="task.id" class="complete">
-              <input type="checkbox" v-model="task.complete" @change="task.save">
-              <input type="text" v-model="task.title" @blur="task.save">
-              <a href="javascript:;" @click="task.destroy">x</a>
-          </li>
-      </ul>
-    </div>
+  <div id="project-management">
+    <ul id="projects">
+      <li
+        v-for="project in projects"
+        :key="project.id"
+      >
+        <a
+          href="javascript:;"
+          :class="selectedProject === project ? 'active' : ''"
+          @click="selectProject(project)"
+        >
+          {{ project.name }}
+        </a>
+      </li>
+      <li>
+        <form @submit.prevent="newProject.save(); selectedProject = newProject; newProject = projects.build()">
+          <input
+            v-model="newProject.name"
+            type="text"
+            placeholder="+ Add Project"
+          >
+        </form>
+      </li>
+    </ul>
+    <p>({{ completedTasks.length }} / {{ selectedProject.tasks.length }} complete)</p>
+    <ul
+      v-if="selectedProject"
+      id="tasks"
+    >
+      <li
+        v-for="task in incompletedTasks"
+        :key="task.id"
+        class="incomplete"
+      >
+        <input
+          type="checkbox"
+          @change="task.complete = !task.complete"
+        >
+        {{ task.complete }}
+        <input
+          v-model="task.title"
+          type="text"
+          @blur="task.save"
+        >
+        <a
+          href="javascript:;"
+          @click="task.destroy"
+        >x</a>
+      </li>
+      <li class="incomplete">
+        <form @submit.prevent="newTask.projectId = selectedProject.id; newTask.save(); newTask = tasks.build()">
+          <input
+            v-model="newTask.complete"
+            type="checkbox"
+            disabled="disabled"
+          >
+          <input
+            v-model="newTask.title"
+            type="text"
+            placeholder="+ Add Task"
+          >
+        </form>
+      </li>
+      <li
+        v-if="completedTasks.length"
+        class="divider"
+      >
+        <hr>
+      </li>
+      <li
+        v-for="task in completedTasks"
+        :key="task.id"
+        class="complete"
+      >
+        <input
+          v-model="task.complete"
+          type="checkbox"
+          @change="task.save"
+        >
+        <input
+          v-model="task.title"
+          type="text"
+          @blur="task.save"
+        >
+        <a
+          href="javascript:;"
+          @click="task.destroy"
+        >x</a>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>
 import Superstore from '../../lib/superstore/index.js'
 
 const superstore = new Superstore({
-    models: {
-        tasks: new Superstore.Models.Base({
-            name: 'task',
-            relationships: {
-                project: {
-                    type: 'belongsTo'
-                }
-            },
-            props: {
-              title: {
-                type: String,
-                default: ''
-              },
-              complete: {
-                type: Boolean,
-                default: false
-              }
-            }
-        }),
-        projects: new Superstore.Models.Base({
-            name: 'project',
-            relationships: {
-                tasks: {
-                    type: 'hasMany'
-                }
-            },
-            props: {
-              name: {
-                default: ''
-              }
-            }
-        })
-    }
+  models: {
+    tasks: new Superstore.Models.Base({
+      name: 'task',
+      relationships: {
+        project: {
+          type: 'belongsTo'
+        }
+      },
+      props: {
+        title: {
+          type: String,
+          default: ''
+        },
+        complete: {
+          type: Boolean,
+          default: false
+        }
+      }
+    }),
+    projects: new Superstore.Models.Base({
+      name: 'project',
+      relationships: {
+        tasks: {
+          type: 'hasMany'
+        }
+      },
+      props: {
+        name: {
+          default: ''
+        }
+      }
+    })
+  }
 }).data
 
 export default {
   name: 'App',
   data () {
-    window.app = this;
+    window.app = this
     window.superstore = superstore
 
     const task = superstore.tasks.create({
@@ -94,8 +151,19 @@ export default {
       newProject: superstore.projects.build()
     }
   },
+  computed: {
+    projectTasks () {
+      return this.selectedProject.tasks
+    },
+    incompletedTasks () {
+      return this.projectTasks.filter((t) => !t.complete)
+    },
+    completedTasks () {
+      return this.projectTasks.filter((t) => t.complete)
+    }
+  },
   methods: {
-    selectProject(project) {
+    selectProject (project) {
       if (this.selectedProject === project) {
         project.name = prompt('What is this project called?')
         project.save()
