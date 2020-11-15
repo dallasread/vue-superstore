@@ -7,14 +7,14 @@
       >
         <a
           href="javascript:;"
-          :class="selectedProject === project ? 'active' : ''"
+          :class="selectedProject.id === project.id ? 'active' : ''"
           @click="selectProject(project)"
         >
           {{ project.name }}
         </a>
       </li>
       <li>
-        <form @submit.prevent="newProject.save(); selectProject(newProject); newProject = models.projects.build()">
+        <form @submit.prevent="newProject.save(); selectProject(newProject); newProject = projects.build()">
           <input
             v-model="newProject.name"
             type="text"
@@ -50,7 +50,7 @@
         >x</a>
       </li>
       <li class="incomplete">
-        <form @submit.prevent="addTask(newTask)">
+        <form @submit.prevent="newTask.projectId = selectedProject.id; newTask.save(); newTask = tasks.build()">
           <input
             v-model="newTask.complete"
             type="checkbox"
@@ -95,9 +95,8 @@
 
 <script>
 import Superstore from '../../lib/superstore/index.js'
-import { ref, reactive, computed } from 'vue'
 
-const models = new Superstore({
+const superstore = new Superstore({
   models: {
     tasks: new Superstore.Models.Base({
       relationships: {
@@ -129,53 +128,27 @@ const models = new Superstore({
       }
     })
   }
-}).models
+}).data
 
 export default {
   name: 'App',
   data () {
     window.app = this
-    window.models = models
+    window.superstore = superstore
 
-    // const project = models.projects.create({ name: 'Project #1' })
-    // const task = models.tasks.create({
-    //   title: 'Create an example',
-    //   complete: true,
-    //   projectId: project.id
-    // })
-
-    const tasks = reactive([])
-    const projects = reactive([])
-    const projectId = 2
-    const project = {
-      id: projectId,
-      name: 'My Project',
-      tasks: computed(() => {
-        return tasks.filter((task) => {
-          return task.projectId === projectId
-        })
-      })
-    }
-
-    projects.push(project)
-    tasks.push({
-      projectId: projectId,
-      title: 'Task #1',
-      complete: false
+    const project = superstore.projects.create({ name: 'Project #1' })
+    const task = superstore.tasks.create({
+      title: 'Create an example',
+      complete: true,
+      projectId: project.id
     })
 
-    window.projectId = projectId
-    window.project = project
-    window.projects = projects
-    window.tasks = tasks
-
     return {
-      models: models,
-      tasks: tasks,
-      projects: projects,
+      tasks: superstore.tasks,
+      projects: superstore.projects,
       selectedProject: project,
-      newTask: {},
-      newProject: {}
+      newTask: superstore.tasks.build(),
+      newProject: superstore.projects.build()
     }
   },
   computed: {
@@ -194,12 +167,6 @@ export default {
       } else {
         this.selectedProject = project
       }
-    },
-    addTask (task) {
-      task.projectId = this.selectedProject.id
-      task.save()
-      window.t = task
-      this.newTask = this.models.tasks.build()
     }
   }
 }
