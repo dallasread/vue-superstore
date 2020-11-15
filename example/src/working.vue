@@ -94,16 +94,57 @@
 </template>
 
 <script>
-import Superstore from './superstore.js'
+// import Superstore from '../../lib/superstore/index.js'
+// import baseModel from '../../lib/models/base/index.js'
+// import { ref, reactive, computed } from 'vue'
 
-const models = new Superstore({
-  tasks: {
-    props: ['title', 'complete'],
-    relationships: {
-      project: {
-        type: 'belongsTo'
-      }
+import { computed, reactive } from 'vue'
+import utils from '../../lib/utils/index.js'
+
+function initializeModel (models, modelName, options) {
+  const model = models[modelName]
+
+  model.build = function (attrs) {
+    const instance = {
+      id: Math.random()
     }
+
+    for (var i = options.props.length - 1; i >= 0; i--) {
+      instance[options.props[i]] = attrs[options.props[i]]
+    }
+
+    for (var key in options.relationships) {
+      instance[key] = computed(function () {
+        return models[key].filter((item) => {
+          return item[`${utils.singularize(modelName)}Id`] === instance.id
+        })
+      })
+    }
+
+    return instance
+  }
+}
+
+function fake (options) {
+  const models = {}
+
+  let key
+  let model
+
+  for (key in options) {
+    models[key] = reactive([])
+  }
+
+  for (key in models) {
+    initializeModel(models, key, options[key])
+  }
+
+  return models
+}
+
+const superstore = fake({
+  tasks: {
+    props: ['title']
   },
   projects: {
     props: ['name'],
@@ -114,18 +155,89 @@ const models = new Superstore({
     }
   }
 })
+
+const tasks = superstore.tasks
+const projects = superstore.projects
+
+// const models = new Superstore({
+//   models: {
+//     tasks: baseModel({
+//       relationships: {
+//         project: {
+//           type: 'belongsTo'
+//         }
+//       },
+//       props: {
+//         title: {
+//           type: String,
+//           default: ''
+//         },
+//         complete: {
+//           type: Boolean,
+//           default: false
+//         }
+//       }
+//     }),
+//     projects: baseModel({
+//       relationships: {
+//         tasks: {
+//           type: 'hasMany'
+//         }
+//       },
+//       props: {
+//         name: {
+//           default: ''
+//         }
+//       }
+//     })
+//   }
+// }).models
+
 export default {
   name: 'App',
   data () {
-    const project = models.projects.create({ name: 'Project #1' })
-    const task = models.tasks.create({ projectId: project.id, title: 'Task #1', complete: false })
+    // window.app = this
+    // window.models = models
+
+    // const project = models.projects.create({ name: 'Project #1' })
+    // const task = models.tasks.create({
+    //   title: 'Create an example',
+    //   complete: true,
+    //   projectId: project.id
+    // })
+    // const selectedProject = project
+    // window.project = project
+
+    // return {
+    //   projects: models.projects,
+    //   tasks: models.tasks,
+    //   selectedProject: selectedProject,
+    //   newTask: models.tasks.build({}),
+    //   newProject: models.projects.build({}),
+    //   completedTasks: models.tasks,
+    //   incompletedTasks: models.tasks
+    //   // incompletedTasks: computed(() => {
+    //   //   return selectedProject.tasks.filter((t) => !t.complete)
+    //   // }),
+    //   // completedTasks: computed(() => {
+    //   //   return selectedProject.tasks.filter((t) => t.complete)
+    //   // })
+    // }
+
+    const project = projects.build({ name: 'Project #1' })
+    projects.push(project)
+    tasks.push({
+      projectId: project.id,
+      title: 'Task #1',
+      complete: false
+    })
 
     return {
-      projects: models.projects,
-      tasks: models.tasks,
+      projects: projects,
+      tasks: tasks,
       selectedProject: project,
-      newTask: models.tasks.build({}),
-      newProject: models.projects.build({})
+      newTask: tasks.build({}),
+      newProject: projects.build({})
     }
   },
   computed: {
