@@ -97,7 +97,21 @@
 import { reactive, computed } from 'vue'
 import Superstore from '../../lib/superstore/index.js'
 
-const superstore = new Superstore(reactive, computed, {
+const models = window.models = new Superstore(reactive, computed, {
+  projects: {
+    relationships: {
+      tasks: {
+        type: 'hasMany'
+      }
+    },
+    props: ['name'],
+    methods: {
+      updateName (name) {
+        this.name = name
+        this.save()
+      }
+    }
+  },
   tasks: {
     relationships: {
       project: {
@@ -114,52 +128,34 @@ const superstore = new Superstore(reactive, computed, {
         default: false
       }
     }
-  },
-  projects: {
-    relationships: {
-      tasks: {
-        type: 'hasMany'
-      }
-    },
-    props: {
-      name: {
-        default: ''
-      }
-    },
-    methods: {
-      updateName (name) {
-        this.name = name
-        this.save()
-      }
-    }
   }
 })
 
 export default {
   name: 'App',
   data () {
-    window.app = this
-    window.superstore = superstore
+    const project = models.projects.create({
+      name: 'Project #1'
+    })
 
-    const project = superstore.projects.create({ name: 'Project #1' })
-    const task = superstore.tasks.create({
+    const task = models.tasks.create({
       title: 'Create an example',
       complete: true,
       projectId: project.id
     })
 
-    superstore.tasks.create({
+    models.tasks.create({
       title: 'Make it readable',
       complete: false,
       projectId: project.id
     })
 
     return {
-      tasks: superstore.tasks,
-      projects: superstore.projects,
+      tasks: models.tasks,
+      projects: models.projects,
       selectedProject: project,
-      newTask: superstore.tasks.build(),
-      newProject: superstore.projects.build()
+      newTask: models.tasks.build(),
+      newProject: models.projects.build()
     }
   },
   computed: {
@@ -187,148 +183,5 @@ export default {
 </script>
 
 <style lang="css">
-/* http://meyerweb.com/eric/tools/css/reset/
-   v2.0 | 20110126
-   License: none (public domain)
-*/
-
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video,
-input, textarea, select {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font-size: 100%;
-    font: inherit;
-    vertical-align: baseline;
-    color: inherit;
-    outline: none;
-}
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
-    display: block;
-}
-body {
-    line-height: 1;
-}
-ol, ul {
-    list-style: none;
-}
-blockquote, q {
-    quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-    content: '';
-    content: none;
-}
-table {
-    border-collapse: collapse;
-    border-spacing: 0;
-}
-a {
-    color: inherit;
-    text-decoration: inherit;
-    text-transform: inherit;
-    display: inline-block;
-}
-img {
-    max-width: 100%;
-}
-
-html {
-  box-sizing: border-box;
-}
-
-*, *:before, *:after {
-  box-sizing: inherit;
-}
-
-html, body {
-  color: #2c3e50;
-  padding: 20px;
-}
-
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#projects {
-  background: #eee;
-}
-
-#projects:after {
-  content: '';
-  clear: both;
-  display: block;
-}
-
-#projects li {
-  float: left;
-}
-
-#projects a, #projects input {
-  border-right: 1px solid #ddd;
-  display: block;
-  padding: 10px 20px;
-  line-height: 1;
-}
-
-#projects input {
-  padding: 7px 10px;
-  width: 8em;
-}
-
-#projects a.active {
-  background: #777;
-  color: #eee;
-}
-
-#tasks li.incomplete {
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
-}
-
-#tasks li.divider {
-  margin-top: -9px;
-}
-
-#tasks li.complete {
-  font-size: 80%;
-  padding: 5px 0;
-  color: #777;
-}
-
-#tasks hr {
-  border: 0;
-  background: #ccc;
-  height: 1px;
-}
-
-#tasks input[type="checkbox"] {
-  margin-right: 10px;
-}
-
-p {
-  font-weight: bold;
-  padding: 8px;
-  background: #777;
-  font-size: 80%;
-  color: #eee;
-  text-align: center;
-}
+@import "./style.css"
 </style>
