@@ -14,7 +14,7 @@
         </a>
       </li>
       <li>
-        <form @submit.prevent="newProject.save(); selectProject(newProject); newProject = projects.build({})">
+        <form @submit.prevent="newProject.save(); selectProject(newProject); newProject = projects.build()">
           <input
             v-model="newProject.name"
             type="text"
@@ -50,7 +50,7 @@
         >x</a>
       </li>
       <li class="incomplete">
-        <form @submit.prevent="newTask.projectId = selectedProject.id; newTask.save(); newTask = tasks.build({})">
+        <form @submit.prevent="newTask.projectId = selectedProject.id; newTask.save(); newTask = tasks.build()">
           <input
             v-model="newTask.complete"
             type="checkbox"
@@ -125,6 +125,12 @@ const superstore = new Superstore(reactive, computed, {
       name: {
         default: ''
       }
+    },
+    methods: {
+      updateName (name) {
+        this.name = name
+        this.save()
+      }
     }
   }
 })
@@ -143,7 +149,7 @@ export default {
     })
 
     superstore.tasks.create({
-      title: 'Another',
+      title: 'Make it readable',
       complete: false,
       projectId: project.id
     })
@@ -152,8 +158,8 @@ export default {
       tasks: superstore.tasks,
       projects: superstore.projects,
       selectedProject: project,
-      newTask: superstore.tasks.build({}),
-      newProject: superstore.projects.build({})
+      newTask: superstore.tasks.build(),
+      newProject: superstore.projects.build()
     }
   },
   computed: {
@@ -170,8 +176,7 @@ export default {
         const name = prompt('What is this project called?', project.name)
 
         if (name) {
-          project.name = name
-          project.save()
+          project.updateName(name)
         }
       } else {
         this.selectedProject = project
