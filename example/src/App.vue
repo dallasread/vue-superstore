@@ -7,14 +7,14 @@
       >
         <a
           href="javascript:;"
-          :class="selectedProject === project ? 'active' : ''"
+          :class="selectedProject.id === project.id ? 'active' : ''"
           @click="selectProject(project)"
         >
           {{ project.name }}
         </a>
       </li>
       <li>
-        <form @submit.prevent="newProject.save(); selectedProject = newProject; newProject = projects.build()">
+        <form @submit.prevent="newProject.save(); selectProject(newProject); newProject = projects.build()">
           <input
             v-model="newProject.name"
             type="text"
@@ -23,13 +23,15 @@
         </form>
       </li>
     </ul>
-    <p>({{ completedTasks.length }} / {{ selectedProject.tasks.length }} complete)</p>
+    <p v-if="selectedProject">
+      ({{ completeTasks.length }} / {{ selectedProject.tasks.length }} complete)
+    </p>
     <ul
       v-if="selectedProject"
       id="tasks"
     >
       <li
-        v-for="task in incompletedTasks"
+        v-for="task in incompleteTasks"
         :key="task.id"
         class="incomplete"
       >
@@ -37,7 +39,6 @@
           type="checkbox"
           @change="task.complete = !task.complete"
         >
-        {{ task.complete }}
         <input
           v-model="task.title"
           type="text"
@@ -63,13 +64,13 @@
         </form>
       </li>
       <li
-        v-if="completedTasks.length"
+        v-if="completeTasks.length"
         class="divider"
       >
         <hr>
       </li>
       <li
-        v-for="task in completedTasks"
+        v-for="task in completeTasks"
         :key="task.id"
         class="complete"
       >
@@ -98,7 +99,6 @@ import Superstore from '../../lib/superstore/index.js'
 const superstore = new Superstore({
   models: {
     tasks: new Superstore.Models.Base({
-      name: 'task',
       relationships: {
         project: {
           type: 'belongsTo'
@@ -116,7 +116,6 @@ const superstore = new Superstore({
       }
     }),
     projects: new Superstore.Models.Base({
-      name: 'project',
       relationships: {
         tasks: {
           type: 'hasMany'
@@ -137,29 +136,27 @@ export default {
     window.app = this
     window.superstore = superstore
 
+    const project = superstore.projects.create({ name: 'Project #1' })
     const task = superstore.tasks.create({
       title: 'Create an example',
       complete: true,
-      projectId: superstore.projects.create({ name: 'Project #1' }).id
+      projectId: project.id
     })
 
     return {
       tasks: superstore.tasks,
       projects: superstore.projects,
-      selectedProject: task.project,
+      selectedProject: project,
       newTask: superstore.tasks.build(),
       newProject: superstore.projects.build()
     }
   },
   computed: {
-    projectTasks () {
-      return this.selectedProject.tasks
+    incompleteTasks () {
+      return this.selectedProject.tasks.filter((t) => !t.complete)
     },
-    incompletedTasks () {
-      return this.projectTasks.filter((t) => !t.complete)
-    },
-    completedTasks () {
-      return this.projectTasks.filter((t) => t.complete)
+    completeTasks () {
+      return this.selectedProject.tasks.filter((t) => t.complete)
     }
   },
   methods: {
