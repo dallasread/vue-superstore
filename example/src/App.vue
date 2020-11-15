@@ -14,7 +14,7 @@
         </a>
       </li>
       <li>
-        <form @submit.prevent="projects.push(newProject); selectProject(newProject); newProject = projects.build({})">
+        <form @submit.prevent="newProject.save(); selectProject(newProject); newProject = projects.build()">
           <input
             v-model="newProject.name"
             type="text"
@@ -24,14 +24,14 @@
       </li>
     </ul>
     <p v-if="selectedProject">
-      ({{ completedTasks.length }} / {{ selectedProject.tasks.length }} complete)
+      ({{ completeTasks.length }} / {{ selectedProject.tasks.length }} complete)
     </p>
     <ul
       v-if="selectedProject"
       id="tasks"
     >
       <li
-        v-for="task in incompletedTasks"
+        v-for="task in incompleteTasks"
         :key="task.id"
         class="incomplete"
       >
@@ -50,7 +50,7 @@
         >x</a>
       </li>
       <li class="incomplete">
-        <form @submit.prevent="newTask.projectId = selectedProject.id; tasks.push(newTask); newTask = tasks.build({})">
+        <form @submit.prevent="newTask.projectId = selectedProject.id; newTask.save(); newTask = tasks.build()">
           <input
             v-model="newTask.complete"
             type="checkbox"
@@ -64,13 +64,13 @@
         </form>
       </li>
       <li
-        v-if="completedTasks.length"
+        v-if="completeTasks.length"
         class="divider"
       >
         <hr>
       </li>
       <li
-        v-for="task in completedTasks"
+        v-for="task in completeTasks"
         :key="task.id"
         class="complete"
       >
@@ -94,46 +94,69 @@
 </template>
 
 <script>
-import Superstore from './superstore.js'
+import Superstore from '../../lib/superstore/index.js'
 
-const models = new Superstore({
-  tasks: {
-    props: ['title', 'complete'],
-    relationships: {
-      project: {
-        type: 'belongsTo'
+const superstore = new Superstore({
+  models: {
+    tasks: new Superstore.Models.Base({
+      relationships: {
+        project: {
+          type: 'belongsTo'
+        }
+      },
+      props: {
+        title: {
+          type: String,
+          default: ''
+        },
+        complete: {
+          type: Boolean,
+          default: false
+        }
       }
-    }
-  },
-  projects: {
-    props: ['name'],
-    relationships: {
-      tasks: {
-        type: 'hasMany'
+    }),
+    projects: new Superstore.Models.Base({
+      relationships: {
+        tasks: {
+          type: 'hasMany'
+        }
+      },
+      props: {
+        name: {
+          default: ''
+        }
       }
-    }
+    })
   }
-})
+}).data
+
 export default {
   name: 'App',
   data () {
-    const project = models.projects.create({ name: 'Project #1' })
-    const task = models.tasks.create({ projectId: project.id, title: 'Task #1', complete: false })
+    window.app = this
+    window.superstore = superstore
+
+    const project = superstore.projects.create({ name: 'Project #1' })
+    const task = superstore.tasks.create({
+      title: 'Create an example',
+      complete: true,
+      projectId: project.id
+    })
 
     return {
-      projects: models.projects,
-      tasks: models.tasks,
+      tasks: superstore.tasks,
+      projects: superstore.projects,
       selectedProject: project,
-      newTask: models.tasks.build({}),
-      newProject: models.projects.build({})
+      newTask: superstore.tasks.build(),
+      newProject: superstore.projects.build()
     }
   },
   computed: {
-    completedTasks () {
-      return this.selectedProject.tasks.filter((t) => t.complete)
-    },
-    incompletedTasks () {
+    incompleteTasks () {
       return this.selectedProject.tasks.filter((t) => !t.complete)
+    },
+    completeTasks () {
+      return this.selectedProject.tasks.filter((t) => t.complete)
     }
   },
   methods: {
