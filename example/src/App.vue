@@ -42,11 +42,11 @@
         <input
           v-model="task.title"
           type="text"
-          @blur="task.save"
+          @blur="task.save()"
         >
         <a
           href="javascript:;"
-          @click="task.destroy"
+          @click="task.destroy()"
         >x</a>
       </li>
       <li class="incomplete">
@@ -77,16 +77,16 @@
         <input
           v-model="task.complete"
           type="checkbox"
-          @change="task.save"
+          @change="task.save()"
         >
         <input
           v-model="task.title"
           type="text"
-          @blur="task.save"
+          @blur="task.save()"
         >
         <a
           href="javascript:;"
-          @click="task.destroy"
+          @click="task.destroy()"
         >x</a>
       </li>
     </ul>
@@ -138,15 +138,9 @@ export default {
       name: 'Project #1'
     })
 
-    const task = models.tasks.create({
+    models.tasks.create({
       title: 'Create an example',
       complete: true,
-      projectId: project.id
-    })
-
-    models.tasks.create({
-      title: 'Make it readable',
-      complete: false,
       projectId: project.id
     })
 
