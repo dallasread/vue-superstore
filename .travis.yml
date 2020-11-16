@@ -1,0 +1,13 @@
+dist: bionic
+
+language: node_js
+
+node_js:
+  - 15
+
+cache:
+  yarn: true
+
+script:
+  - yarn lint
+  - yarn test:unit
