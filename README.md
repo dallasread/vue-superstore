@@ -1,5 +1,7 @@
 # Superstore
 
+[![Build Status](https://travis-ci.com/dallasread/vue-superstore.svg?branch=master)](https://travis-ci.com/dallasread/vue-superstore)
+
 ## Why?
 
 *Intuitive* data relationships for Vue.
