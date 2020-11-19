@@ -99,12 +99,12 @@ import Superstore from '../../lib/superstore/index.js'
 
 const models = window.models = new Superstore(reactive, computed, {
   projects: {
+    props: ['name'],
     relationships: {
       tasks: {
         type: 'hasMany'
       }
     },
-    props: ['name'],
     methods: {
       updateName (name) {
         this.name = name
@@ -113,11 +113,6 @@ const models = window.models = new Superstore(reactive, computed, {
     }
   },
   tasks: {
-    relationships: {
-      project: {
-        type: 'belongsTo'
-      }
-    },
     props: {
       title: {
         type: String,
@@ -126,6 +121,11 @@ const models = window.models = new Superstore(reactive, computed, {
       complete: {
         type: Boolean,
         default: false
+      }
+    },
+    relationships: {
+      project: {
+        type: 'belongsTo'
       }
     }
   }
