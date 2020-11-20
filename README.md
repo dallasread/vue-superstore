@@ -61,7 +61,7 @@ import { reactive, computed } from 'vue'
 const superstore = new Superstore(reactive, computed, {
   projects: {
     relationships: {
-      tasks: { type: 'hasMany' }
+      tasks: { type: 'HasMany' }
     },
     props: ['name'],
     methods: {
@@ -98,7 +98,7 @@ For the full context, check out the [example](https://github.com/dallasread/vue-
 superstore.projects.build({}) // Is not yet reflected in relationships
 superstore.projects.create({}) // Builds AND saves the instance
 superstore.projects.query() // Promise that returns all projects
-superstore.projects.findById() // Promise that returns the matching project
+superstore.projects.find(123) // Promise that returns a single instance
 ```
 
 Note: It is possible to `class MySpecialModel extends Superstore.Model ...` and supply it in the `Superstore` configuration:

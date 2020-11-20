@@ -102,7 +102,7 @@ const models = window.models = new Superstore(reactive, computed, {
     props: ['name'],
     relationships: {
       tasks: {
-        type: 'hasMany'
+        type: 'HasMany'
       }
     },
     methods: {
@@ -125,7 +125,7 @@ const models = window.models = new Superstore(reactive, computed, {
     },
     relationships: {
       project: {
-        type: 'belongsTo'
+        type: 'BelongsTo'
       }
     }
   }
