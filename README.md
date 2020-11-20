@@ -101,6 +101,14 @@ superstore.projects.query() // Promise that returns all projects
 superstore.projects.findById() // Promise that returns the matching project
 ```
 
+Note: It is possible to `class MySpecialModel extends Superstore.Model ...` and supply it in the `Superstore` configuration:
+
+```js
+new Superstore(reactive, computed, {
+  projects: new MySpecialModel()
+})
+```
+
 ### Instance
 
 ```js
