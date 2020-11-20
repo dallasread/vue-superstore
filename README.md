@@ -95,8 +95,8 @@ For the full context, check out the [example](https://github.com/dallasread/vue-
 ### Models
 
 ```js
-superstore.projects.build(ATTRIBUTES) // Is not yet reflected in relationships
-superstore.projects.create(ATTRIBUTES) // Builds AND saves the instance
+superstore.projects.build({}) // Is not yet reflected in relationships
+superstore.projects.create({}) // Builds AND saves the instance
 superstore.projects.query() // Promise that returns all projects
 superstore.projects.findById() // Promise that returns the matching project
 ```
