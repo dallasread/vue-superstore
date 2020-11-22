@@ -13,6 +13,7 @@
   },
   "main": "lib/superstore/index.js",
   "dependencies": {
+    "aws-sdk": "^2.797.0",
     "localforage": "^1.9.0",
     "uniq-id": "^1.0.0",
     "vue": "^3.0.0"
