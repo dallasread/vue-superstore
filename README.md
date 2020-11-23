@@ -181,7 +181,3 @@ Options supported:
 foreignKey
 primaryKey
 ```
-
-## Roadmap
-
-- Online / Offline Storage
