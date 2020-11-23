@@ -1,4 +1,4 @@
-# Superstore
+# Vue Superstore
 
 [![Build Status](https://travis-ci.com/dallasread/vue-superstore.svg?branch=master)](https://travis-ci.com/dallasread/vue-superstore)
 
@@ -9,7 +9,7 @@
 ## Table of Contents
 
 1. [What's so great about Superstore?](#whats-so-great-about-superstore)
-1. [Configuration](#configuration)
+1. [Example Configuration](#configuration)
 1. [Models](#models)
 1. [Instance](#instance)
 1. [Relationships](#relationships)
@@ -18,7 +18,7 @@
 
 ### What's so great about Superstore?
 
-With a simple `Superstore` configuration, you can do things like this in your template *with intuitive, **out-of-the-box** database-connected interaction*:
+With a simple `Superstore` configuration, you can do powerful things in your Vue component *with intuitive, **out-of-the-box** database-connected interactions*.
 
 OK... so how do I easily create a project?
 
@@ -54,7 +54,11 @@ And what can I do in a Vue template?
 </li>
 ```
 
-### Configuration
+Even better... your data can be backed by one REST API, S3 file, or custom storage solution. Best of all, you can supply multiple stores – useful for syncing data to LocalStorage or adding a backup data storage service.
+
+For a full demo, check out the [example](https://github.com/dallasread/vue-superstore/blob/master/example/src/App.vue) folder. Each file in [lib](https://github.com/dallasread/vue-superstore/blob/master/lib/)'s folders contains detailed front-matter about usage.
+
+### Example Configuration
 
 ```js
 import { reactive, computed } from 'vue'
@@ -64,6 +68,11 @@ const superstore = new Superstore(reactive, computed, {
       tasks: { type: 'HasMany' }
     },
     props: ['name'],
+    computed: {
+      username() { // Available via `this.username`
+        return this.name.toLowerCase()
+      }
+    },
     methods: {
       updateName (name) { // Available à la `project.updateName()`
         this.name = name
@@ -71,12 +80,16 @@ const superstore = new Superstore(reactive, computed, {
       }
     }
   },
-  tasks: {
+  tasks: new Superstore.Models.Storage({
     props: {
       title: { type: String, default: '' },
       complete: { type: Boolean, default: false }
+    },
+    store: { // Store tasks in LocalStorage
+      type: 'Local',
+      name: 'tasks'
     }
-  }
+  })
 })
 
 const project = superstore.projects.create({
@@ -90,18 +103,47 @@ superstore.tasks.create({
 })
 ```
 
-For the full context, check out the [example](https://github.com/dallasread/vue-superstore/blob/master/example/src/App.vue).
-
 ### Models
 
+There are a few types of models. Explore them in the Each file in [stores](https://github.com/dallasread/vue-superstore/blob/master/lib/stores/) folder.
+
+#### Options
+
 ```js
-superstore.projects.build({}) // Is not yet reflected in relationships
-superstore.projects.create({}) // Builds AND saves the instance
+{
+    primaryKey: 'id',
+    props: ['name'], // Array or Object syntax
+    relationships: { // Define model relationships
+      tasks: {
+        type: 'HasMany'
+      }
+    },
+    computed: { // Define computed properties for each instance
+      nickname() {
+        return this.name.toLowerCase().slice(0, 3)
+      }
+    },
+    methods: { // Define methods for each instance
+      updateName (name) {
+        this.name = name
+        this.save()
+      }
+    }
+  }
+```
+
+#### Methods
+
+```js
+superstore.projects.build({}) // Not reflected in relationships, returns instance
+superstore.projects.create({}) // Builds AND saves the instance, returns instance
 superstore.projects.query() // Promise that returns all projects
 superstore.projects.find(123) // Promise that returns a single instance
 ```
 
-Note: It is possible to `class MySpecialModel extends Superstore.Model ...` and supply it in the `Superstore` configuration:
+#### Custom Model
+
+Note: It is possible to `class MySpecialModel extends Superstore.Models.Base ...` and supply it in the `Superstore` configuration:
 
 ```js
 new Superstore(reactive, computed, {
