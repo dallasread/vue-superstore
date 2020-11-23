@@ -9,7 +9,7 @@
 ## Table of Contents
 
 1. [What's so great about Superstore?](#whats-so-great-about-superstore)
-1. [Example Configuration](#configuration)
+1. [Example Configuration](#example-configuration)
 1. [Models](#models)
 1. [Instance](#instance)
 1. [Relationships](#relationships)
