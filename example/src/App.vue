@@ -5,7 +5,7 @@
   >
     <ul id="projects">
       <li
-        v-for="project in projects"
+        v-for="project in projects.data"
         :key="project.id"
       >
         <a
@@ -101,14 +101,14 @@
 import { reactive, computed } from 'vue'
 import Superstore from '../../lib/superstore/index.js'
 
-const store = {
-  type: 'Local',
-  name: 'my-local-storage'
-}
+// const store = {
+//   type: 'Local',
+//   name: 'my-local-storage'
+// }
 
 const models = window.models = new Superstore(reactive, computed, {
   projects: {
-    store,
+    // store,
     props: ['name'],
     relationships: {
       tasks: {
@@ -123,7 +123,7 @@ const models = window.models = new Superstore(reactive, computed, {
     }
   },
   tasks: {
-    store,
+    // store,
     props: {
       title: {
         type: String,
@@ -164,11 +164,11 @@ export default {
   mounted () {
     models.projects.query().then(() => {
       models.tasks.query().then(() => {
-        if (!models.projects.length) {
+        if (!models.projects.data.length) {
           this.seed()
         }
 
-        this.selectedProject = models.projects[0]
+        this.selectedProject = models.projects.data[0]
       })
     })
   },
