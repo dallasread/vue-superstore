@@ -1,5 +1,8 @@
 <template>
-  <div id="project-management">
+  <div
+    v-if="selectedProject"
+    id="project-management"
+  >
     <ul id="projects">
       <li
         v-for="project in projects"
@@ -7,7 +10,7 @@
       >
         <a
           href="javascript:;"
-          :class="selectedProject.id === project.id ? 'active' : ''"
+          :class="selectedProject && selectedProject.id === project.id ? 'active' : ''"
           @click="selectProject(project)"
         >
           {{ project.name }}
@@ -23,7 +26,7 @@
         </form>
       </li>
     </ul>
-    <p v-if="selectedProject">
+    <p>
       ({{ completedTasks.length }} / {{ selectedProject.tasks.length }} complete)
     </p>
     <ul
@@ -36,8 +39,9 @@
         class="incomplete"
       >
         <input
+          v-model="task.complete"
           type="checkbox"
-          @change="task.complete = !task.complete"
+          @change="task.save()"
         >
         <input
           v-model="task.title"
@@ -97,8 +101,14 @@
 import { reactive, computed } from 'vue'
 import Superstore from '../../lib/superstore/index.js'
 
+const store = {
+  type: 'Local',
+  name: 'my-local-storage'
+}
+
 const models = window.models = new Superstore(reactive, computed, {
   projects: {
+    store,
     props: ['name'],
     relationships: {
       tasks: {
@@ -113,6 +123,7 @@ const models = window.models = new Superstore(reactive, computed, {
     }
   },
   tasks: {
+    store,
     props: {
       title: {
         type: String,
@@ -134,35 +145,48 @@ const models = window.models = new Superstore(reactive, computed, {
 export default {
   name: 'App',
   data () {
-    const project = models.projects.create({
-      name: 'Project #1'
-    })
-
-    models.tasks.create({
-      title: 'Create an example',
-      complete: true,
-      projectId: project.id
-    })
-
     return {
       tasks: models.tasks,
       projects: models.projects,
-      selectedProject: project,
+      selectedProject: null,
       newTask: models.tasks.build(),
       newProject: models.projects.build()
     }
   },
   computed: {
     incompletedTasks () {
-      return this.selectedProject.tasks.filter((t) => !t.complete)
+      return this.selectedProject ? this.selectedProject.tasks.filter((t) => !t.complete) : []
     },
     completedTasks () {
-      return this.selectedProject.tasks.filter((t) => t.complete)
+      return this.selectedProject ? this.selectedProject.tasks.filter((t) => t.complete) : []
     }
   },
+  mounted () {
+    models.projects.query().then(() => {
+      models.tasks.query().then(() => {
+        if (!models.projects.length) {
+          this.seed()
+        }
+
+        this.selectedProject = models.projects[0]
+      })
+    })
+  },
   methods: {
+    seed () {
+      const project = models.projects.create({
+        name: 'Project #1'
+      })
+
+      models.tasks.create({
+        title: 'Create an example',
+        complete: true,
+        projectId: project.id
+      })
+    },
+
     selectProject (project) {
-      if (this.selectedProject.id === project.id) {
+      if (this.selectedProject && this.selectedProject.id === project.id) {
         const name = prompt('What is this project called?', project.name)
 
         if (name) {
