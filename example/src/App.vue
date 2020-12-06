@@ -168,18 +168,19 @@ export default {
     }
   },
   mounted () {
-    models.projects.query().then(() => {
-      models.tasks.query().then(() => {
-        if (!models.projects.data.length) {
-          this.seed()
-        }
+    Promise.all(
+      models.projects.query(),
+      models.tasks.query()
+    ).then((results) => {
+      if (!models.projects.data.length) {
+        this.addExamples()
+      }
 
-        this.selectedProject = models.projects.data[0]
-      })
+      this.selectedProject = models.projects.data[0]
     })
   },
   methods: {
-    seed () {
+    addExamples () {
       const project = models.projects.create({
         name: 'Project #1'
       })
