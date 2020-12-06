@@ -1,6 +1,6 @@
 # Vue Superstore
 
-[![Build Status](https://travis-ci.com/dallasread/vue-superstore.svg?branch=master)](https://travis-ci.com/dallasread/vue-superstore)
+[![Build Status](https://travis-ci.com/dallasread/vue-superstore.svg?branch=master)](https://travis-ci.com/dallasread/vue-superstore) [![Build Status](https://codeclimate.com/github/dallasread/vue-superstore/test_coverage)](https://api.codeclimate.com/v1/badges/57f6ca23262f56cb04e6/test_coverage)
 
 ## Why?
 
