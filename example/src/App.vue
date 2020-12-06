@@ -101,14 +101,14 @@
 import { reactive, computed } from 'vue'
 import Superstore from '../../lib/superstore/index.js'
 
-// const store = {
-//   type: 'Local',
-//   name: 'my-local-storage'
-// }
+const store = {
+  type: 'Local',
+  name: 'my-local-storage'
+}
 
 const models = window.models = new Superstore(reactive, computed, {
   projects: {
-    // store,
+    store,
     props: ['name'],
     relationships: {
       tasks: {
@@ -123,7 +123,7 @@ const models = window.models = new Superstore(reactive, computed, {
     }
   },
   tasks: {
-    // store,
+    store,
     props: {
       title: {
         type: String,
