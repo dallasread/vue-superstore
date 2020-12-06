@@ -94,6 +94,12 @@
         >x</a>
       </li>
     </ul>
+
+    <a
+      href="javascript:;"
+      class="reset"
+      @click="reset"
+    >Reset everything</a>
   </div>
 </template>
 
@@ -194,6 +200,13 @@ export default {
         }
       } else {
         this.selectedProject = project
+      }
+    },
+
+    reset () {
+      if (confirm('Are you sure you want to remove all data?')) {
+        models.tasks.reset()
+        models.projects.reset()
       }
     }
   }

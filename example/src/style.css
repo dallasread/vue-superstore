@@ -105,7 +105,7 @@ html, body {
 }
 
 #projects a.active {
-  background: #777;
+  background: navy;
   color: #eee;
 }
 
@@ -121,7 +121,7 @@ html, body {
 #tasks li.complete {
   font-size: 80%;
   padding: 5px 0;
-  color: #777;
+  color: #aaa;
 }
 
 #tasks hr {
@@ -137,8 +137,16 @@ html, body {
 p {
   font-weight: bold;
   padding: 8px;
-  background: #777;
+  background: navy;
   font-size: 80%;
   color: #eee;
   text-align: center;
+}
+
+.reset {
+  font-size: 80%;
+  color: blue;
+  margin-top: 2em;
+  float: right;
+  color: #aaa;
 }
