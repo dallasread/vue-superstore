@@ -168,10 +168,10 @@ export default {
     }
   },
   mounted () {
-    Promise.all(
+    Promise.all([
       models.projects.query(),
       models.tasks.query()
-    ).then((results) => {
+    ]).then((results) => {
       if (!models.projects.data.length) {
         this.addExamples()
       }
