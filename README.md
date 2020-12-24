@@ -143,6 +143,12 @@ superstore.projects.query() // Promise that returns all projects
 superstore.projects.find(123) // Promise that returns a single instance
 ```
 
+In some cases, it is helpful to be able to create items in memory only, *without* persisting to stores:
+
+```
+superstore.projects.inMemory.create()
+```
+
 #### Custom Model
 
 Note: It is possible to `class MySpecialModel extends Superstore.Models.Base ...` and supply it in the `Superstore` configuration:
