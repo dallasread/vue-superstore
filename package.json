@@ -8,8 +8,7 @@
     "lint": "eslint . --ext .js",
     "lint:fix": "eslint . --ext .js --fix",
     "serve": "cd example && vue-cli-service serve",
-    "test:unit": "vue-cli-service test:unit --coverage",
-    "test:watch": "vue-cli-service test:unit --watch"
+    "test:unit": "vue-cli-service test:unit"
   },
   "main": "lib/superstore/index.js",
   "dependencies": {
