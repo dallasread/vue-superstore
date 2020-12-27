@@ -105,7 +105,7 @@
 
 <script>
 import { reactive, computed } from 'vue'
-import Superstore from '../../lib/superstore/index.js'
+import { Superstore } from '../../lib/superstore/index.js'
 
 const store = {
   type: 'Local',
