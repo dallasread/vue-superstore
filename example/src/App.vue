@@ -113,7 +113,7 @@ const store = {
 }
 
 const models = window.models = new Superstore(reactive, computed, {
-  projects: {
+  project: {
     store,
     props: ['name'],
     relationships: {
@@ -128,7 +128,7 @@ const models = window.models = new Superstore(reactive, computed, {
       }
     }
   },
-  tasks: {
+  task: {
     store,
     props: {
       title: {
@@ -152,11 +152,11 @@ export default {
   name: 'App',
   data () {
     return {
-      tasks: models.tasks,
-      projects: models.projects,
+      tasks: models.task,
+      projects: models.project,
       selectedProject: null,
-      newTask: models.tasks.build(),
-      newProject: models.projects.build()
+      newTask: models.task.build(),
+      newProject: models.project.build()
     }
   },
   computed: {
@@ -169,23 +169,23 @@ export default {
   },
   mounted () {
     Promise.all([
-      models.projects.query(),
-      models.tasks.query()
+      models.project.query(),
+      models.task.query()
     ]).then((results) => {
-      if (!models.projects.data.length) {
+      if (!models.project.data.length) {
         this.addExamples()
       }
 
-      this.selectedProject = models.projects.data[0]
+      this.selectedProject = models.project.data[0]
     })
   },
   methods: {
     addExamples () {
-      const project = models.projects.create({
+      const project = models.project.create({
         name: 'Project #1'
       })
 
-      models.tasks.create({
+      models.task.create({
         title: 'Create an example',
         complete: true,
         projectId: project.id
@@ -206,8 +206,8 @@ export default {
 
     reset () {
       if (confirm('Are you sure you want to remove all data?')) {
-        models.tasks.reset()
-        models.projects.reset()
+        models.task.reset()
+        models.project.reset()
       }
     }
   }

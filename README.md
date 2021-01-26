@@ -25,7 +25,7 @@ With a simple `Superstore` configuration, you can do powerful things in your Vue
 OK... so how do I easily create a project?
 
 ```js
-const project = superstore.projects.create({
+const project = superstore.project.create({
   name: 'Project #1'
 })
 ```
@@ -33,7 +33,7 @@ const project = superstore.projects.create({
 And a task?
 
 ```js
-superstore.tasks.create({
+superstore.task.create({
   title: 'Create an example',
   complete: true,
   projectId: project.id
@@ -65,9 +65,11 @@ For a full demo, check out the [example](https://github.com/dallasread/vue-super
 ```js
 import { reactive, computed } from 'vue'
 const superstore = new Superstore(reactive, computed, {
-  projects: {
+  project: {
     relationships: {
-      tasks: { type: 'HasMany' }
+      tasks: { 
+        type: 'HasMany' 
+      }
     },
     props: ['name'],
     computed: {
@@ -82,7 +84,7 @@ const superstore = new Superstore(reactive, computed, {
       }
     }
   },
-  tasks: new Superstore.Models.Storage({
+  task: new Superstore.Models.Storage({
     props: {
       title: { type: String, default: '' },
       complete: { type: Boolean, default: false }
@@ -94,11 +96,11 @@ const superstore = new Superstore(reactive, computed, {
   })
 })
 
-const project = superstore.projects.create({
+const project = superstore.project.create({
   name: 'Project #1'
 })
 
-superstore.tasks.create({
+superstore.task.create({
   title: 'Create an example',
   complete: true,
   projectId: project.id
@@ -137,16 +139,16 @@ There are a few types of models. Explore them in the Each file in [stores](https
 #### Methods
 
 ```js
-superstore.projects.build({}) // Not reflected in relationships, returns instance
-superstore.projects.create({}) // Builds AND saves the instance, returns instance
-superstore.projects.query() // Promise that returns all projects
-superstore.projects.find(123) // Promise that returns a single instance
+superstore.project.build({}) // Not reflected in relationships, returns instance
+superstore.project.create({}) // Builds AND saves the instance, returns instance
+superstore.project.query() // Promise that returns all projects
+superstore.project.find(123) // Promise that returns a single instance
 ```
 
 In some cases, it is helpful to be able to create items in memory only, *without* persisting to stores:
 
 ```
-superstore.projects.inMemory.create()
+superstore.project.inMemory.create()
 ```
 
 #### Custom Model
@@ -155,7 +157,7 @@ Note: It is possible to `class MySpecialModel extends Superstore.Models.Base ...
 
 ```js
 new Superstore(reactive, computed, {
-  projects: new MySpecialModel()
+  project: new MySpecialModel()
 })
 ```
 
