@@ -17,6 +17,7 @@
 1. [Relationships](#relationships)
    1. [Belongs To](#belongs-to)
    1. [Has Many](#has-many)
+1. [Stores](#stores)
 
 ### What's so great about Superstore?
 
@@ -58,7 +59,7 @@ And what can I do in a Vue template?
 
 Even better... your data can be backed by one REST API, S3 file, or custom storage solution. Best of all, you can supply multiple stores – useful for syncing data to LocalStorage or adding a backup data storage service.
 
-For a full demo, check out the [example](https://github.com/dallasread/vue-superstore/blob/master/example/src/App.vue) folder. Each file in [lib](https://github.com/dallasread/vue-superstore/blob/master/lib/)'s folders contains detailed front-matter about usage.
+For a full demo, check out the [example](https://github.com/dallasread/vue-superstore/blob/master/example/src/App.vue) folder. In addition, each file in [lib](https://github.com/dallasread/vue-superstore/blob/master/lib/)'s folders contains detailed front-matter about usage.
 
 ### Example Configuration
 
@@ -109,7 +110,7 @@ superstore.task.create({
 
 ### Models
 
-There are a few types of models. Explore them in the Each file in [stores](https://github.com/dallasread/vue-superstore/blob/master/lib/stores/) folder.
+There are a few types of models. You can explore each of them in the [models](https://github.com/dallasread/vue-superstore/blob/master/lib/models/) folder.
 
 #### Options
 
@@ -139,7 +140,7 @@ There are a few types of models. Explore them in the Each file in [stores](https
 #### Methods
 
 ```js
-superstore.project.build({}) // Not reflected in relationships, returns instance
+superstore.project.build({}) // Relationships are not reflected, returns instance
 superstore.project.create({}) // Builds AND saves the instance, returns instance
 superstore.project.query() // Promise that returns all projects
 superstore.project.find(123) // Promise that returns a single instance
@@ -151,20 +152,14 @@ In some cases, it is helpful to be able to create items in memory only, *without
 superstore.project.inMemory.create()
 ```
 
-#### Custom Model
-
-Note: It is possible to `class MySpecialModel extends Superstore.Models.Base ...` and supply it in the `Superstore` configuration:
-
-```js
-new Superstore(reactive, computed, {
-  project: new MySpecialModel()
-})
-```
-
 ### Instance
 
+An Instance is the representation of the instance of a model (eg. record). There are a few convenience methods on each Instance.
+
+#### Methods
+
 ```js
-project.save() // Saves the project (eg. usable by a hasMany, resets changeset)
+project.save() // Saves the project (eg. usable by a hasMany, resets project's changes)
 project.destroy() // Removes the project
 project.toJSON() // Maps the project to JSON
 project.changes() // Lists the changes to the project since last save
@@ -179,8 +174,9 @@ project.rollback() // Reset project to the last saved state
 Options supported:
 
 ```js
-foreignKey
-primaryKey
+foreignModel: [String, optional] The linked model's type
+primaryKey: [String, optional] The primary model's attribute
+foreignKey: [String, optional] The foreign model's attribute
 ```
 
 #### Has Many
@@ -188,6 +184,37 @@ primaryKey
 Options supported:
 
 ```js
-foreignKey
-primaryKey
+foreignModel: [String, optional] The linked model's type
+primaryKey: [String, optional] The primary model's attribute
+foreignKey: [String, optional] The foreign model's attribute
 ```
+
+### Stores
+
+A Store is the adapter that connects to your data storage.
+
+This configuration would store all "accounts" in a single `.json`:
+
+```
+new Superstore({
+  account: {
+    store: {
+      type: 's3',
+      accessKeyId: '',
+      secretAccessKey: '',
+      bucket: '',
+      endpoint: 'https://s3.us-east-1.amazonaws.com',
+      apiVersion: 'latest',
+      maxRetries: 1
+      extension: '.json'
+    }
+  }
+})
+```
+
+You can explore each of them in the [stores](https://github.com/dallasread/vue-superstore/blob/master/lib/stores/) folder.
+
+- [local](https://github.com/dallasread/vue-superstore/blob/master/lib/stores/local/index.js)
+- [rest](https://github.com/dallasread/vue-superstore/blob/master/lib/stores/rest/index.js)
+- [s3](https://github.com/dallasread/vue-superstore/blob/master/lib/stores/s3/index.js)
+- [s3-by-instance](https://github.com/dallasread/vue-superstore/blob/master/lib/stores/s3-by-instance/index.js)
