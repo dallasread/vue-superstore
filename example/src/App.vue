@@ -104,7 +104,7 @@
 </template>
 
 <script>
-import { reactive, computed } from 'vue'
+import { reactive } from 'vue'
 import { Superstore } from '../../lib/superstore/index.js'
 
 const store = {
@@ -112,7 +112,7 @@ const store = {
   name: 'my-local-storage'
 }
 
-const models = window.models = new Superstore(reactive, computed, {
+const models = window.models = new Superstore(reactive, {
   project: {
     store,
     props: ['name'],

@@ -64,8 +64,8 @@ For a full demo, check out the [example](https://github.com/dallasread/vue-super
 ### Example Configuration
 
 ```js
-import { reactive, computed } from 'vue'
-const superstore = new Superstore(reactive, computed, {
+import { reactive } from 'vue'
+const superstore = new Superstore(reactive, {
   project: {
     relationships: {
       tasks: { 
