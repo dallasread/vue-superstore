@@ -1,4 +1,6 @@
 <template>
+  <h3>This page also persists between page loads via LocalStorage!</h3>
+
   <div
     v-if="selectedProject"
     id="project-management"
