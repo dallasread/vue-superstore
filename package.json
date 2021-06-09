@@ -35,5 +35,23 @@
     "webpack-cli": "^4.2.0",
     "webpack-dev-server": "^3.11.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "directories": {
+    "example": "example",
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dallasread/vue-superstore.git"
+  },
+  "keywords": [
+    "vue",
+    "vue3",
+    "vue-superstore",
+    "vuejs"
+  ],
+  "bugs": {
+    "url": "https://github.com/dallasread/vue-superstore/issues"
+  },
+  "homepage": "https://github.com/dallasread/vue-superstore#readme"
 }
